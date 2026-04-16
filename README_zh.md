@@ -29,6 +29,7 @@ MOSS-TTS-Nano 是来自 [MOSI.AI](https://mosi.cn/#hero) 和 [OpenMOSS 团队](h
 
 ## 新闻
 
+* 2026.4.16：我们发布了 **MOSS-TTS-Nano 微调代码**。训练和使用说明见 [./finetuning/README_zh.md](./finetuning/README_zh.md)。
 * 2026.4.14：我们发布了 [**MOSS-TTS-Nano-Reader**](https://github.com/OpenMOSS/MOSS-TTS-Nano-Reader)，这是一个基于 **MOSS-TTS-Nano** 的本地浏览器网页朗读应用。
 * 2026.4.10：我们发布了 **MOSS-TTS-Nano**。演示 Space 已在 [OpenMOSS-Team/MOSS-TTS-Nano](https://huggingface.co/spaces/OpenMOSS-Team/MOSS-TTS-Nano) 上线，也可以通过 [openmoss.github.io/MOSS-TTS-Nano-Demo/](https://openmoss.github.io/MOSS-TTS-Nano-Demo/) 查看 demo 和更多细节。
 
@@ -50,6 +51,7 @@ MOSS-TTS-Nano 是来自 [MOSI.AI](https://mosi.cn/#hero) 和 [OpenMOSS 团队](h
   - [使用 `app.py` 启动本地-web-演示](#使用-apppy-启动本地-web-演示)
   - [CLI 命令：`moss-tts-nano generate`](#cli-命令-moss-tts-nano-generate)
   - [CLI 命令：`moss-tts-nano serve`](#cli-命令-moss-tts-nano-serve)
+  - [微调](#微调)
 - [MOSS-Audio-Tokenizer-Nano](#moss-audio-tokenizer-nano)
 - [MOSS-TTS 家族](#moss-tts)
 - [许可证](#许可证)
@@ -173,6 +175,12 @@ moss-tts-nano serve
 ```
 
 此命令转发到 `app.py`，将模型保持在内存中加载，并为本地浏览器演示和 HTTP 生成端点提供服务。
+
+### 微调
+
+微调教程已经提供。
+
+具体见 [./finetuning/README_zh.md](./finetuning/README_zh.md)。
 
 ## MOSS-Audio-Tokenizer-Nano
 

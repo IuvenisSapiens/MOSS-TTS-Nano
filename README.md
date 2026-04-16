@@ -32,6 +32,7 @@ MOSS-TTS-Nano is an open-source **multilingual tiny speech generation model** fr
 
 ## News
 
+* 2026.4.16: We release the **MOSS-TTS-Nano finetuning code**. See [./finetuning/README.md](./finetuning/README.md) for training and usage details.
 * 2026.4.14: We release [**MOSS-TTS-Nano-Reader**](https://github.com/OpenMOSS/MOSS-TTS-Nano-Reader), a local browser reading application built on top of **MOSS-TTS-Nano**.
 * 2026.4.10: We release **MOSS-TTS-Nano**. A demo Space is available at [OpenMOSS-Team/MOSS-TTS-Nano](https://huggingface.co/spaces/OpenMOSS-Team/MOSS-TTS-Nano). You can also view the demo and more details at [openmoss.github.io/MOSS-TTS-Nano-Demo/](https://openmoss.github.io/MOSS-TTS-Nano-Demo/).
 
@@ -53,6 +54,7 @@ MOSS-TTS-Nano is an open-source **multilingual tiny speech generation model** fr
   - [Local Web Demo with `app.py`](#local-web-demo-with-apppy)
   - [CLI Command: `moss-tts-nano generate`](#cli-command-moss-tts-nano-generate)
   - [CLI Command: `moss-tts-nano serve`](#cli-command-moss-tts-nano-serve)
+  - [Finetuning](#finetuning)
 - [MOSS-Audio-Tokenizer-Nano](#moss-audio-tokenizer-nano)
 - [MOSS-TTS Family](#moss-tts)
 - [License](#license)
@@ -178,6 +180,12 @@ moss-tts-nano serve
 ```
 
 This command forwards to `app.py`, keeps the model loaded in memory, and serves the local browser demo plus HTTP generation endpoints.
+
+### Finetuning
+
+Finetuning tutorials are already provided.
+
+See [./finetuning/README.md](./finetuning/README.md) for details.
 
 ## MOSS-Audio-Tokenizer-Nano
 
