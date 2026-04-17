@@ -12,14 +12,15 @@ authors = [
   { name = "OpenMOSS Team" },
 ]
 dependencies = [
-  "numpy>=2.4.4",
-  "fastapi>=0.135.3",
+  "numpy>=1.24",
+  "fastapi>=0.136.0",
   "python-multipart>=0.0.26",
   "sentencepiece>=0.2.1",
   "torch==2.11.0",
   "torchaudio==2.11.0",
   "transformers==5.5.4",
   "uvicorn>=0.44.0",
+  "onnxruntime>=1.24.4",
 ]
 
 [project.urls]
@@ -34,8 +35,12 @@ moss-tts-nano = "moss_tts_nano.cli:main"
 packages = ["moss_tts_nano"]
 py-modules = [
   "app",
+  "app_onnx",
   "infer",
+  "infer_onnx",
   "moss_tts_nano_runtime",
+  "onnx_tts_runtime",
+  "ort_cpu_runtime",
   "text_normalization_pipeline",
   "tts_robust_normalizer_single_script",
 ]
