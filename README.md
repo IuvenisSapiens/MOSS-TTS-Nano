@@ -32,7 +32,7 @@ MOSS-TTS-Nano is an open-source **multilingual tiny speech generation model** fr
 
 ## News
 
-* 2026.4.27: We updated the evaluation metrics for [**MOSS-Audio-Tokenizer-Nano**](#moss-audio-tokenizer-nano), including reconstruction quality comparisons on speech, audio, and music benchmarks.
+* 2026.4.27: We added updated evaluation results for [**MOSS-Audio-Tokenizer-Nano**](#moss-audio-tokenizer-nano), including reconstruction quality comparisons on speech, audio, and music benchmarks.
 * 2026.4.17: We are excited to release a more efficient and fully standalone [**ONNX CPU Version**](#onnx-cpu-version), backed by the Hugging Face repositories [**MOSS-TTS-Nano-100M-ONNX**](https://huggingface.co/OpenMOSS-Team/MOSS-TTS-Nano-100M-ONNX) and [**MOSS-Audio-Tokenizer-Nano-ONNX**](https://huggingface.co/OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX). It preserves the full voice cloning workflow while removing the PyTorch dependency during inference. In our tests, it delivers nearly **2x** the processing efficiency of the original version, and runs smoothly on a **single CPU core** on a **MacBook Air M4**. Built on top of this ONNX CPU version, we have also updated [**MOSS-TTS-Nano-Reader**](https://github.com/OpenMOSS/MOSS-TTS-Nano-Reader), which can now run the model directly inside the browser as an extension, without requiring a separate local inference service.
 * 2026.4.16: We release the **MOSS-TTS-Nano finetuning code**. See [./finetuning/README.md](./finetuning/README.md) for training and usage details.
 * 2026.4.14: We release [**MOSS-TTS-Nano-Reader**](https://github.com/OpenMOSS/MOSS-TTS-Nano-Reader), a local browser reading application built on top of **MOSS-TTS-Nano**.
@@ -297,7 +297,7 @@ See [./finetuning/README.md](./finetuning/README.md) for details.
 To further improve perceptual quality while reducing inference cost, we trained **MOSS-Audio-Tokenizer-Nano**, a lightweight tokenizer with approximately **20 million parameters** designed for high-fidelity audio compression. It supports **48 kHz** input and output as well as **stereo audio**, which helps reduce compression loss and improve listening quality. It can compress **48 kHz stereo audio** into a **12.5 Hz** token stream and uses **RVQ with 16 codebooks**, enabling high-fidelity reconstruction across variable bitrates from **0.125 kbps to 2 kbps**.
 
 
-To learn more about setup, advanced usage, and evaluation metrics, please visit the [MOSS-Audio-Tokenizer Repository](https://github.com/OpenMOSS/MOSS-Audio-Tokenizer)
+To learn more about setup, advanced usage, and evaluation metrics, please visit the [MOSS-Audio-Tokenizer Repository](https://github.com/OpenMOSS/MOSS-Audio-Tokenizer).
 
 <p align="center">
   <img src="./assets/images/arch_moss_audio_tokenizer_nano.png" alt="MOSS-Audio-Tokenizer-Nano architecture" width="100%" />
@@ -313,7 +313,7 @@ To learn more about setup, advanced usage, and evaluation metrics, please visit 
 
 ### Evaluation Metrics
 
-The table below compares the reconstruction quality of MOSS-Audio-Tokenizer-Nano with open-source audio tokenizers under **120M parameters** on speech, audio, and music data. As shown in the table and figure, MOSS-Audio-Tokenizer-Nano achieves the best overall reconstruction quality while remaining one of the smallest models in the comparison.
+The table below compares the reconstruction quality of MOSS-Audio-Tokenizer-Nano with open-source audio tokenizers with **no more than 120M parameters** on speech, audio, and music data. As shown in the table and figure, MOSS-Audio-Tokenizer-Nano achieves the best overall reconstruction quality while remaining one of the smallest models in the comparison.
 
 - Speech metrics are evaluated on LibriSpeech test-clean (English) and AISHELL-2 (Chinese), reported as EN/ZH.
 - Audio metrics are evaluated on the AudioSet evaluation subset, while music metrics are evaluated on MUSDB, reported as audio/music.
@@ -324,19 +324,20 @@ The table below compares the reconstruction quality of MOSS-Audio-Tokenizer-Nano
 
 <br>
 <p align="center">
-    <img src="assets/images/evaluation_table_moss_audio_tokenizer_nano.png" width="95%"> <br>
+    <img src="assets/images/evaluation_table_moss_audio_tokenizer_nano.png" width="100%"> <br>
     Reconstruction quality comparison of open-source audio tokenizers on speech and audio/music data.
 </p>
 <br>
 
 ### LibriSpeech Speech Metrics (MOSS-Audio-Tokenizer-Nano vs. Open-source Tokenizers)
 
-The plots below compare MOSS-Audio-Tokenizer-Nano with other open-source speech tokenizers under **120M parameters** on the LibriSpeech dataset. The models are evaluated with SIM, STOI, PESQ-NB, and PESQ-WB, where higher values indicate better reconstruction quality.
+The plots below compare MOSS-Audio-Tokenizer-Nano with other open-source audio tokenizers and codecs with **no more than 120M parameters** on the LibriSpeech dataset. The models are evaluated with SIM, STOI, PESQ-NB, and PESQ-WB, where higher values indicate better reconstruction quality.
 For the same model, we control the bitrate by adjusting the number of RVQ codebooks used during inference.
 
 <br>
 <p align="center">
     <img src="assets/images/evaluation_fig_moss_audio_tokenizer.png" width="100%"> <br>
+    LibriSpeech reconstruction quality comparison across different bitrates.
 </p>
 <br>
 

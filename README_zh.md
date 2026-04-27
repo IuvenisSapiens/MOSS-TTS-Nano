@@ -29,7 +29,7 @@ MOSS-TTS-Nano 是来自 [MOSI.AI](https://mosi.cn/#hero) 和 [OpenMOSS 团队](h
 
 ## 新闻
 
-* 2026.4.27：我们更新了 [**MOSS-Audio-Tokenizer-Nano**](#moss-audio-tokenizer-nano) 的评测指标，包括在语音、音频和音乐基准上的重建质量对比。
+* 2026.4.27：我们新增了 [**MOSS-Audio-Tokenizer-Nano**](#moss-audio-tokenizer-nano) 的最新评测结果，包括在语音、音频和音乐基准上的重建质量对比。
 * 2026.4.17：我们很高兴发布更加高效且可独立运行的 [**ONNX CPU 版本**](#onnx-cpu-version)，对应 Hugging Face 仓库 [**MOSS-TTS-Nano-100M-ONNX**](https://huggingface.co/OpenMOSS-Team/MOSS-TTS-Nano-100M-ONNX) 与 [**MOSS-Audio-Tokenizer-Nano-ONNX**](https://huggingface.co/OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX)。该版本在推理阶段不再依赖 PyTorch，完整保留音色克隆工作流；根据我们的实测，其处理效率较原版接近翻倍，并且在 **MacBook Air M4** 上仅使用 **1 核 CPU** 即可流畅运行。基于这一 ONNX CPU 版本，我们也同步更新了 [**MOSS-TTS-Nano-Reader**](https://github.com/OpenMOSS/MOSS-TTS-Nano-Reader)，现在可以直接以浏览器插件的形式在浏览器内运行本模型，无需再在本地单独部署推理服务。
 * 2026.4.16：我们发布了 **MOSS-TTS-Nano 微调代码**。训练和使用说明见 [./finetuning/README_zh.md](./finetuning/README_zh.md)。
 * 2026.4.14：我们发布了 [**MOSS-TTS-Nano-Reader**](https://github.com/OpenMOSS/MOSS-TTS-Nano-Reader)，这是一个基于 **MOSS-TTS-Nano** 的本地浏览器网页朗读应用。
@@ -290,7 +290,7 @@ python onnx/export_hf_to_tts_onnx.py \
 
 为了进一步提高感知质量同时降低推理成本，我们训练了 **MOSS-Audio-Tokenizer-Nano**，这是一个轻量级分词器，包含约 **20M 参数**，专为高保真音频压缩设计。它支持 **48 kHz** 输入输出以及 **立体声音频**，有助于减少压缩损失并提高听觉质量。它可以将 **48 kHz 立体声音频**压缩成 **12.5 Hz** 的 token 流，使用 **16 个码本的 RVQ**，在 **0.125 kbps 到 2 kbps** 的可变码率范围内实现高保真重建。
 
-要了解更多关于设置、高级用法和评估指标的信息，请访问 [MOSS-Audio-Tokenizer 仓库](https://github.com/OpenMOSS/MOSS-Audio-Tokenizer)
+要了解更多关于设置、高级用法和评估指标的信息，请访问 [MOSS-Audio-Tokenizer 仓库](https://github.com/OpenMOSS/MOSS-Audio-Tokenizer)。
 
 <p align="center">
   <img src="./assets/images/arch_moss_audio_tokenizer_nano.png" alt="MOSS-Audio-Tokenizer-Nano 架构" width="100%" />
@@ -305,7 +305,7 @@ python onnx/export_hf_to_tts_onnx.py \
 
 ### 评测指标
 
-下表将 **MOSS-Audio-Tokenizer-Nano** 与参数量在 **120M 以下**的开源音频 tokenizer 进行对比，评估其在语音、音频和音乐数据上的重建质量。可以看到，MOSS-Audio-Tokenizer-Nano 在模型规模接近最小的同时，取得了最好的整体重建质量。
+下表将 **MOSS-Audio-Tokenizer-Nano** 与参数量 **不超过 120M** 的开源音频 tokenizer 进行对比，评估其在语音、音频和音乐数据上的重建质量。可以看到，MOSS-Audio-Tokenizer-Nano 在模型规模接近最小的同时，取得了最好的整体重建质量。
 
 - 语音指标在 LibriSpeech test-clean（英文）和 AISHELL-2（中文）上评测，结果以 EN/ZH 的形式报告。
 - 音频指标在 AudioSet evaluation subset 上评测，音乐指标在 MUSDB 上评测，结果以 audio/music 的形式报告。
@@ -316,19 +316,20 @@ python onnx/export_hf_to_tts_onnx.py \
 
 <br>
 <p align="center">
-    <img src="assets/images/evaluation_table_moss_audio_tokenizer_nano.png" width="95%"> <br>
+    <img src="assets/images/evaluation_table_moss_audio_tokenizer_nano.png" width="100%"> <br>
     开源音频 tokenizer 在语音、音频和音乐数据上的重建质量对比。
 </p>
 <br>
 
 ### LibriSpeech 语音指标（MOSS-Audio-Tokenizer-Nano vs. 开源 Tokenizer）
 
-下图将 **MOSS-Audio-Tokenizer-Nano** 与参数量在 **120M 以下**的开源语音 tokenizer 在 LibriSpeech 数据集上进行对比。评测指标包括 SIM、STOI、PESQ-NB 和 PESQ-WB，数值越高表示重建质量越好。
+下图将 **MOSS-Audio-Tokenizer-Nano** 与参数量 **不超过 120M** 的开源音频 tokenizer 和 codec 在 LibriSpeech 数据集上进行对比。评测指标包括 SIM、STOI、PESQ-NB 和 PESQ-WB，数值越高表示重建质量越好。
 对于同一个模型，我们通过调整推理时使用的 RVQ 码本数量来控制码率。
 
 <br>
 <p align="center">
     <img src="assets/images/evaluation_fig_moss_audio_tokenizer.png" width="100%"> <br>
+    不同码率下的 LibriSpeech 重建质量对比。
 </p>
 <br>
 
