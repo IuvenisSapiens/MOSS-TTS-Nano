@@ -32,6 +32,7 @@ MOSS-TTS-Nano is an open-source **multilingual tiny speech generation model** fr
 
 ## News
 
+* 2026.4.27: We updated the evaluation metrics for [**MOSS-Audio-Tokenizer-Nano**](#moss-audio-tokenizer-nano), including reconstruction quality comparisons on speech, audio, and music benchmarks.
 * 2026.4.17: We are excited to release a more efficient and fully standalone [**ONNX CPU Version**](#onnx-cpu-version), backed by the Hugging Face repositories [**MOSS-TTS-Nano-100M-ONNX**](https://huggingface.co/OpenMOSS-Team/MOSS-TTS-Nano-100M-ONNX) and [**MOSS-Audio-Tokenizer-Nano-ONNX**](https://huggingface.co/OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX). It preserves the full voice cloning workflow while removing the PyTorch dependency during inference. In our tests, it delivers nearly **2x** the processing efficiency of the original version, and runs smoothly on a **single CPU core** on a **MacBook Air M4**. Built on top of this ONNX CPU version, we have also updated [**MOSS-TTS-Nano-Reader**](https://github.com/OpenMOSS/MOSS-TTS-Nano-Reader), which can now run the model directly inside the browser as an extension, without requiring a separate local inference service.
 * 2026.4.16: We release the **MOSS-TTS-Nano finetuning code**. See [./finetuning/README.md](./finetuning/README.md) for training and usage details.
 * 2026.4.14: We release [**MOSS-TTS-Nano-Reader**](https://github.com/OpenMOSS/MOSS-TTS-Nano-Reader), a local browser reading application built on top of **MOSS-TTS-Nano**.
@@ -54,6 +55,7 @@ MOSS-TTS-Nano is an open-source **multilingual tiny speech generation model** fr
   - [Voice Clone with `infer.py`](#voice-clone-with-inferpy)
   - [Local Web Demo with `app.py`](#local-web-demo-with-apppy)
   - [ONNX CPU Inference](#onnx-cpu-version)
+  - [Export TTS-only ONNX Weights](#export-tts-only-onnx-weights)
   - [CLI Command: `moss-tts-nano generate`](#cli-command-moss-tts-nano-generate)
   - [CLI Command: `moss-tts-nano serve`](#cli-command-moss-tts-nano-serve)
   - [Finetuning](#finetuning)
@@ -212,6 +214,32 @@ Then open `http://127.0.0.1:18083` in your browser.
 
 The first startup may spend extra time downloading assets if `models/` does not contain the ONNX weights yet.
 
+### Export TTS-only ONNX Weights
+
+If you retrain `MOSS-TTS-Nano`, you need to re-export the TTS-side ONNX weights. The exporter under [`onnx/`](./onnx) takes a local Hugging Face-format `MOSS-TTS-Nano` checkpoint and outputs a TTS-only ONNX model directory.
+
+Example:
+
+```bash
+python onnx/export_hf_to_tts_onnx.py \
+  --checkpoint-path /path/to/MOSS-TTS-Nano \
+  --output-dir /path/to/MOSS-TTS-Nano-100M-ONNX
+```
+
+The output directory contains:
+
+- `moss_tts_prefill.onnx`
+- `moss_tts_decode_step.onnx`
+- `moss_tts_local_decoder.onnx`
+- `moss_tts_local_cached_step.onnx`
+- `moss_tts_local_fixed_sampled_frame.onnx`
+- `moss_tts_global_shared.data`
+- `moss_tts_local_shared.data`
+- `tts_browser_onnx_meta.json`
+- `tokenizer.model`
+
+This is intended for the ONNX deployment path only. Existing prompt audio codes produced by `MOSS-Audio-Tokenizer-Nano` do not need to be regenerated when the audio tokenizer stays fixed.
+
 ### CLI Command: `moss-tts-nano generate`
 
 After `pip install -e .`, you can call the packaged CLI directly:
@@ -281,6 +309,37 @@ To learn more about setup, advanced usage, and evaluation metrics, please visit 
 | Model | Hugging Face | ModelScope |
 |:-----:|:------------:|:----------:|
 | **MOSS-Audio-Tokenizer-Nano** | [![Hugging Face](https://img.shields.io/badge/Huggingface-Model-orange?logo=huggingface)](https://huggingface.co/OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano) | [![ModelScope](https://img.shields.io/badge/ModelScope-Model-7B61FF?logo=modelscope&logoColor=white)](https://modelscope.cn/models/openmoss/MOSS-Audio-Tokenizer-Nano) |
+
+
+### Evaluation Metrics
+
+The table below compares the reconstruction quality of MOSS-Audio-Tokenizer-Nano with open-source audio tokenizers under **120M parameters** on speech, audio, and music data. As shown in the table and figure, MOSS-Audio-Tokenizer-Nano achieves the best overall reconstruction quality while remaining one of the smallest models in the comparison.
+
+- Speech metrics are evaluated on LibriSpeech test-clean (English) and AISHELL-2 (Chinese), reported as EN/ZH.
+- Audio metrics are evaluated on the AudioSet evaluation subset, while music metrics are evaluated on MUSDB, reported as audio/music.
+- STFT-Dist. denotes the STFT distance.
+- Higher is better for speech metrics, while lower is better for audio/music metrics (Mel-Loss, STFT-Dist.).
+- Ch. denotes the number of input/output channels supported by the audio tokenizer: `ch=1` means mono audio, and `ch=2` means stereo audio.
+- Nvq denotes the number of quantizers.
+
+<br>
+<p align="center">
+    <img src="assets/images/evaluation_table_moss_audio_tokenizer_nano.png" width="95%"> <br>
+    Reconstruction quality comparison of open-source audio tokenizers on speech and audio/music data.
+</p>
+<br>
+
+### LibriSpeech Speech Metrics (MOSS-Audio-Tokenizer-Nano vs. Open-source Tokenizers)
+
+The plots below compare MOSS-Audio-Tokenizer-Nano with other open-source speech tokenizers under **120M parameters** on the LibriSpeech dataset. The models are evaluated with SIM, STOI, PESQ-NB, and PESQ-WB, where higher values indicate better reconstruction quality.
+For the same model, we control the bitrate by adjusting the number of RVQ codebooks used during inference.
+
+<br>
+<p align="center">
+    <img src="assets/images/evaluation_fig_moss_audio_tokenizer.png" width="100%"> <br>
+</p>
+<br>
+
 
 <a id="moss-tts"></a>
 ## MOSS-TTS Family

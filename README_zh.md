@@ -29,6 +29,7 @@ MOSS-TTS-Nano 是来自 [MOSI.AI](https://mosi.cn/#hero) 和 [OpenMOSS 团队](h
 
 ## 新闻
 
+* 2026.4.27：我们更新了 [**MOSS-Audio-Tokenizer-Nano**](#moss-audio-tokenizer-nano) 的评测指标，包括在语音、音频和音乐基准上的重建质量对比。
 * 2026.4.17：我们很高兴发布更加高效且可独立运行的 [**ONNX CPU 版本**](#onnx-cpu-version)，对应 Hugging Face 仓库 [**MOSS-TTS-Nano-100M-ONNX**](https://huggingface.co/OpenMOSS-Team/MOSS-TTS-Nano-100M-ONNX) 与 [**MOSS-Audio-Tokenizer-Nano-ONNX**](https://huggingface.co/OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX)。该版本在推理阶段不再依赖 PyTorch，完整保留音色克隆工作流；根据我们的实测，其处理效率较原版接近翻倍，并且在 **MacBook Air M4** 上仅使用 **1 核 CPU** 即可流畅运行。基于这一 ONNX CPU 版本，我们也同步更新了 [**MOSS-TTS-Nano-Reader**](https://github.com/OpenMOSS/MOSS-TTS-Nano-Reader)，现在可以直接以浏览器插件的形式在浏览器内运行本模型，无需再在本地单独部署推理服务。
 * 2026.4.16：我们发布了 **MOSS-TTS-Nano 微调代码**。训练和使用说明见 [./finetuning/README_zh.md](./finetuning/README_zh.md)。
 * 2026.4.14：我们发布了 [**MOSS-TTS-Nano-Reader**](https://github.com/OpenMOSS/MOSS-TTS-Nano-Reader)，这是一个基于 **MOSS-TTS-Nano** 的本地浏览器网页朗读应用。
@@ -51,6 +52,7 @@ MOSS-TTS-Nano 是来自 [MOSI.AI](https://mosi.cn/#hero) 和 [OpenMOSS 团队](h
   - [使用 `infer.py` 进行语音克隆](#使用-inferpy-进行语音克隆)
   - [使用 `app.py` 启动本地-web-演示](#使用-apppy-启动本地-web-演示)
   - [ONNX CPU 版本](#onnx-cpu-version)
+  - [导出仅 TTS 的 ONNX 权重](#导出仅-tts-的-onnx-权重)
   - [CLI 命令：`moss-tts-nano generate`](#cli-命令-moss-tts-nano-generate)
   - [CLI 命令：`moss-tts-nano serve`](#cli-命令-moss-tts-nano-serve)
   - [微调](#微调)
@@ -253,6 +255,32 @@ python app_onnx.py
 
 首次启动如果本地没有 ONNX 权重，会先自动下载。
 
+### 导出仅 TTS 的 ONNX 权重
+
+如果重新训练了 `MOSS-TTS-Nano`，那么需要重导 TTS 侧 ONNX 权重。[`onnx/`](./onnx) 目录下的导出脚本接收本地 Hugging Face 格式的 `MOSS-TTS-Nano` checkpoint，并输出一套仅包含 TTS 侧文件的 ONNX 模型目录。
+
+示例：
+
+```bash
+python onnx/export_hf_to_tts_onnx.py \
+  --checkpoint-path /path/to/MOSS-TTS-Nano \
+  --output-dir /path/to/MOSS-TTS-Nano-100M-ONNX
+```
+
+输出目录包含：
+
+- `moss_tts_prefill.onnx`
+- `moss_tts_decode_step.onnx`
+- `moss_tts_local_decoder.onnx`
+- `moss_tts_local_cached_step.onnx`
+- `moss_tts_local_fixed_sampled_frame.onnx`
+- `moss_tts_global_shared.data`
+- `moss_tts_local_shared.data`
+- `tts_browser_onnx_meta.json`
+- `tokenizer.model`
+
+这个脚本面向 ONNX 部署链路。只要 `MOSS-Audio-Tokenizer-Nano` 没变，原先基于它生成的 prompt audio codes 不需要重新生成。
+
 ## MOSS-Audio-Tokenizer-Nano
 
 <a id="mat-intro"></a>
@@ -274,6 +302,35 @@ python app_onnx.py
 | 模型 | Hugging Face | ModelScope |
 |:-----:|:------------:|:----------:|
 | **MOSS-Audio-Tokenizer-Nano** | [![Hugging Face](https://img.shields.io/badge/Huggingface-Model-orange?logo=huggingface)](https://huggingface.co/OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano) | [![ModelScope](https://img.shields.io/badge/ModelScope-Model-7B61FF?logo=modelscope&logoColor=white)](https://modelscope.cn/models/openmoss/MOSS-Audio-Tokenizer-Nano) |
+
+### 评测指标
+
+下表将 **MOSS-Audio-Tokenizer-Nano** 与参数量在 **120M 以下**的开源音频 tokenizer 进行对比，评估其在语音、音频和音乐数据上的重建质量。可以看到，MOSS-Audio-Tokenizer-Nano 在模型规模接近最小的同时，取得了最好的整体重建质量。
+
+- 语音指标在 LibriSpeech test-clean（英文）和 AISHELL-2（中文）上评测，结果以 EN/ZH 的形式报告。
+- 音频指标在 AudioSet evaluation subset 上评测，音乐指标在 MUSDB 上评测，结果以 audio/music 的形式报告。
+- STFT-Dist. 表示 STFT 距离。
+- 语音指标越高越好；音频和音乐指标中，Mel-Loss 与 STFT-Dist. 越低越好。
+- Ch. 表示 audio tokenizer 支持的输入/输出声道数：`ch=1` 表示单声道音频，`ch=2` 表示立体声音频。
+- Nvq 表示量化器数量。
+
+<br>
+<p align="center">
+    <img src="assets/images/evaluation_table_moss_audio_tokenizer_nano.png" width="95%"> <br>
+    开源音频 tokenizer 在语音、音频和音乐数据上的重建质量对比。
+</p>
+<br>
+
+### LibriSpeech 语音指标（MOSS-Audio-Tokenizer-Nano vs. 开源 Tokenizer）
+
+下图将 **MOSS-Audio-Tokenizer-Nano** 与参数量在 **120M 以下**的开源语音 tokenizer 在 LibriSpeech 数据集上进行对比。评测指标包括 SIM、STOI、PESQ-NB 和 PESQ-WB，数值越高表示重建质量越好。
+对于同一个模型，我们通过调整推理时使用的 RVQ 码本数量来控制码率。
+
+<br>
+<p align="center">
+    <img src="assets/images/evaluation_fig_moss_audio_tokenizer.png" width="100%"> <br>
+</p>
+<br>
 
 <a id="moss-tts"></a>
 ## MOSS-TTS 家族
