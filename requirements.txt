@@ -4,8 +4,7 @@ python-multipart>=0.0.26
 sentencepiece>=0.2.1
 torch==2.11.0
 torchaudio==2.11.0
-transformers==5.5.4
-sentencepiece
+transformers==5.8.0
 uvicorn>=0.44.0
 WeTextProcessing>=1.0.4.1
 soundfile
